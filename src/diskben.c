@@ -6,39 +6,37 @@
 #include <string.h>
 
 #define FILE_NAME "file.txt"
-#define FILE_SIZE 1024*1024*1024;
 
 void *ranRead(void *n) {
 	int  *size  = (int *)n;
 	FILE *pFile = fopen(FILE_NAME, "r");
-	int pos = 0;
+	unsigned long m = 1024ul * 1024ul * 1024ul * 2ul;
+	srand((int)time(0));
+	unsigned long pos = rand() % (m - *size);
 	int i   = 0;
-	for (i = 0; i < *size; i++) {
-		pos = rand() % FILE_SIZE;
-		fseek(pFile, pos, SEEK_SET);
-		fgetc(pFile);
-	}
+	char * buffer = (char *)malloc((*size)*sizeof(char));
+	fseek(pFile, pos, SEEK_SET);
+	fread(buffer, *size, 1, pFile);
 	fclose(pFile);
 }
 
 void *ranWrite(void *n) {
 	int  *size  = (int *)n;
 	FILE *pFile = fopen(FILE_NAME, "r+");
-	int pos = 0;
+	fseek(pFile, 0, SEEK_SET);
+	unsigned long m =  1024ul * 1024ul * 1024ul * 2ul;
+	srand((int)time(0));
+	unsigned long pos = rand() % (m - *size);
 	int i   = 0;
-	char b  = 'b';
-	for (i = 0; i < *size; i++) {
-		pos = rand() % FILE_SIZE;
-		fseek(pFile, pos, SEEK_SET);
-		fputc(b, pFile);
-	}
+	char * buffer = (char *)malloc((*size)*sizeof(char));
+	fseek(pFile, pos, SEEK_SET);
+	fwrite(buffer, *size, 1, pFile);
 	fclose(pFile);
 }
 
 void *seqRead(void *n) {
 	int  *size  = (int *)n;
 	FILE *pFile = fopen(FILE_NAME, "r");
-	int pos = 0;
 	int i   = 0;
 	for (i = 0; i < *size; i++) {
 		fgetc(pFile);
@@ -48,20 +46,29 @@ void *seqRead(void *n) {
 
 void *seqWrite(void *n) {
 	int  *size  = (int *)n;
-	FILE *pFile = fopen(FILE_NAME, "w");
-	int pos = 0;
+	FILE *pFile = fopen(FILE_NAME, "r+");
+	fseek(pFile, 0, SEEK_SET);
 	int i	= 0;
-	char a  = 'a';
+	char b  = 'b';
 	for (i = 0; i < *size; i++) {
-		fputc(a, pFile);
+		fputc(b, pFile);
 	}
 	fclose(pFile);
 }
 
 int main() {
 
+	FILE *pFile = fopen(FILE_NAME, "w");
+	unsigned  long k = 0;
+	char a = 'a';
+	unsigned long m = 1024ul * 1024ul * 1024ul * 2ul;
+	for (k = 0; k < m; k++) {
+		fputc(a, pFile);
+	}
+	fclose(pFile);
 	srand((int)time(0));
 	int i = 0;
+	
 	for (i = 1; i <=2; i++) {
 		int j = 0;
 		for (j = 0; j < 4; j++) {
@@ -88,7 +95,7 @@ int main() {
 			gettimeofday(&end_t, NULL);
 			exec_t = 1000.0*(end_t.tv_sec - start_t.tv_sec) + (end_t.tv_usec - start_t.tv_usec)/1000.0;
 			throughput = (n / (1024.0 * 1024.0)) / (exec_t / 1000.0);
-			printf("With %d threads, sequential read %10d bytes, the latency is %10f ms and the throughput     is %10f MB/sec\n", i, n, exec_t, throughput);
+			printf("With %d threads, sequential  read %10d bytes, the latency is %10f ms and the throughput     is %10f MB/sec\n", i, n, exec_t, throughput);
 
 			gettimeofday(&start_t, NULL);
 			for (k = 0; k < i; k++)
@@ -98,7 +105,7 @@ int main() {
 			gettimeofday(&end_t, NULL);
 			exec_t = 1000.0*(end_t.tv_sec - start_t.tv_sec) + (end_t.tv_usec - start_t.tv_usec)/1000.0;
 			throughput = (n / (1024.0 * 1024.0)) / (exec_t / 1000.0);
-			printf("With %d threads, randomly write %10d bytes, the latency is %10f ms and the throughput     is %10f MB/sec\n", i, n, exec_t, throughput);
+			printf("With %d threads, randomly   write %10d bytes, the latency is %10f ms and the throughput     is %10f MB/sec\n", i, n, exec_t, throughput);
 
 			gettimeofday(&start_t, NULL);
 			for (k = 0; k < i; k++)
@@ -108,7 +115,7 @@ int main() {
 			gettimeofday(&end_t, NULL);
 			exec_t = 1000.0*(end_t.tv_sec - start_t.tv_sec) + (end_t.tv_usec - start_t.tv_usec)/1000.0;
 			throughput = (n / (1024.0 * 1024.0)) / (exec_t / 1000.0);
-			printf("With %d threads, randomly read %10d bytes, the latency is %10f ms and the throughput     is %10f MB/sec\n", i, n, exec_t, throughput);
+			printf("With %d threads, randomly    read %10d bytes, the latency is %10f ms and the throughput     is %10f MB/sec\n", i, n, exec_t, throughput);
 		}
 	}
 	remove(FILE_NAME);
