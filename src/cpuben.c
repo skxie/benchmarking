@@ -4,15 +4,15 @@
 #include <time.h>
 #include <math.h>
 
-#define NUM_LOOPS 1000
+#define NUM_LOOPS 10000
 
 void *flops(void *arg) {
 	double sum = 0.0;
-	double i = 0.0;
-	double j = 0.0;
-	for (i = 0.0; i < NUM_LOOPS; i = i + 1.0) {
-		for (j = 0.0; j < NUM_LOOPS; j = j + 1.0) {
-			sum = sum + i + j;
+	int i = 0;
+	int j = 0;
+	for (i = 0; i < NUM_LOOPS; i++) {
+		for (j = 0; j < NUM_LOOPS; j++) {
+			sum += i + j;
 		}		
 	}
 }
@@ -23,7 +23,7 @@ void *iops(void *arg) {
 	int j = 0;
 	for (i = 0; i < NUM_LOOPS; i++) {
 		for (j = 0; j < NUM_LOOPS; j++) {
-			sum = sum + i + j;
+			sum += i + j;
 		}
 	}
 }
@@ -34,7 +34,7 @@ int main() {
 	int i = 0;
 	for (i = 0; i < 3; i++) {
 		int n = pow(2.0, (double) i);
-		int operations = 3 * 2 * NUM_LOOPS * 2 * NUM_LOOPS * n;
+		unsigned long operations = 2ul * NUM_LOOPS * NUM_LOOPS * n;
 		pthread_t pthreads[n];
 		int k = 0;
 		void *arg;

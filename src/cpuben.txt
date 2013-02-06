@@ -1,1 +1,0 @@
-gcc cpuben.c -lm -lpthread -o run
