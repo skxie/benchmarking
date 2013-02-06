@@ -1,4 +1,4 @@
-all: cpuben diskben memben server
+all: cpuben diskben memben serverben clientben
 
 cpuben: cpuben.c
 	gcc cpuben.c -lm -pthread -o cpuben
@@ -9,8 +9,11 @@ diskben: diskben.c
 memben: memben.c
 	gcc memben.c -lm -pthread -o memben
 
-server: server.c
-	gcc server.c -pthread -o server
+serverben: serverben.c
+	gcc serverben.c -pthread -o serverben
+
+clientben: clientben.c
+	gcc clientben.c -pthread -o clientben
 
 clean:
-	rm cpuben diskben memben server
+	rm cpuben diskben memben serverben clientben

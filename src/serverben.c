@@ -91,8 +91,8 @@ void tcpServer(int bufferSize, int numOfThreads) {
 }
 
 int main(int argc, char *argv[]) {
-	if (argc != 5) {
-		printf("It should contain five arguments, including TCP/UDP, buffer_size and num_of_threads\n");
+	if (argc != 4) {
+		printf("It should contain four arguments, including TCP/UDP, buffer_size and num_of_threads\n");
 		return 1;
 	}
 
