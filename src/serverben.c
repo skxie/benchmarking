@@ -21,13 +21,11 @@ void *udp_send_data(void *t) {
 	memset(buff, 0, sizeof(char)*tinfo->bufferSize);
 	int sin_size = sizeof(struct sockaddr_in);
 
+	//recive and send messages multiple times
 	int i = 0;
 	for (i = 0 ; i < NUM_LOOPS; i++) {
-		//printf("0 %d\n", i);
 		recvfrom(tinfo->sock, buff, tinfo->bufferSize, 0, (struct sockaddr *)&client_addr, &sin_size);
-		//printf("1 %d\n", i);
 		sendto(  tinfo->sock, buff, tinfo->bufferSize, 0, (struct sockaddr *)&client_addr, sizeof(struct sockaddr));
-		//printf("2 %d\n", i);
 	}
 }
 
@@ -46,6 +44,8 @@ void udpServer(int bufferSize, int numOfThreads) {
 	int len = 0;
 	pthread_t threads[numOfThreads];
 	int i = 0;
+	
+	//multiple treads to handle requests
 	struct thread_info * t = (struct thread_info *)malloc(sizeof(struct thread_info));
 	t->sock = server_sock;
 	t->bufferSize = bufferSize;
@@ -55,13 +55,13 @@ void udpServer(int bufferSize, int numOfThreads) {
 	for (i = 0; i < numOfThreads; i++) {
 		pthread_join(threads[i], NULL);
 	}
-	//close(server_sock);
 }
 
 void *tcp_recv_data(void *t) {
 	struct thread_info *tinfo = (struct thread_info *)t;
 	char * buff = (char *)malloc(sizeof(char)*tinfo->bufferSize);
 	memset(buff, 0, sizeof(char)*tinfo->bufferSize);
+	//receive and send messsages multiple times
 	int i = 0;
 	for (i = 0; i < NUM_LOOPS; i++) {
 		recv(tinfo->sock, buff, tinfo->bufferSize, 0);
@@ -88,6 +88,7 @@ void tcpServer(int bufferSize, int numOfThreads) {
 	int i = 0;
 	while (1) {
 		client_sock = accept(server_sock, (struct sockaddr *)&client_addr, &sin_size);
+		//after the new client is connected to the server, issue a thread to handle the request from this specific client
 		struct thread_info * t = (struct thread_info *)malloc(sizeof(struct thread_info));
 		t->sock = client_sock;
 		t->bufferSize = bufferSize;
